@@ -54,6 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # 1 -- Coordinator
     coordinator = ShellyBridgeCoordinator(hass, entry)
+    coordinator.init_state_file(hass.config.path(".storage", "shelly_3em_bridge"))
     await coordinator.async_start()
     await coordinator.async_refresh()
 
@@ -79,7 +80,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # 4b -- UDP RPC transport (Cloud-configured push to Hyper)
     from .udp_transport import UdpRpcTransport
-    udp_transport = UdpRpcTransport(coordinator, 8006)
+    udp_transport = UdpRpcTransport(coordinator, 8006, dst_addr=coordinator.rpc_udp_dst)
     await udp_transport.async_start()
     coordinator.udp_transport = udp_transport
     coordinator.rpc_udp_port = 8006

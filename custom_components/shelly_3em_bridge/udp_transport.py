@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 class UdpRpcTransport:
     """UDP-based RPC transport for local Shelly <-> Zendure Hyper communication."""
 
-    PUSH_INTERVAL = 10  # seconds between periodic NotifyStatus pushes
+    PUSH_INTERVAL = 5  # seconds between periodic NotifyStatus pushes
 
     def __init__(
         self, coordinator: Any, listen_port: int, dst_addr: str | None = None,
@@ -82,12 +82,14 @@ class UdpRpcTransport:
 
     async def _push_loop(self) -> None:
         """Periodically push NotifyStatus to the Hyper."""
-        try:
-            while self._running:
+        while self._running:
+            try:
                 await asyncio.sleep(self.PUSH_INTERVAL)
                 self._send_notify_status()
-        except asyncio.CancelledError:
-            raise
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                _LOGGER.warning("UDP push error (continuing): %s", exc)
 
     def _send_notify_status(self) -> None:
         """Build and send a NotifyStatus datagram to the Hyper."""
@@ -95,7 +97,7 @@ class UdpRpcTransport:
             return
         frame = {
             "src": self._coord.device_id,
-            "dst": "*",
+            "dst": self._peer_id or "*",
             "method": "NotifyStatus",
             "params": {
                 "ts": time.time(),
@@ -103,7 +105,10 @@ class UdpRpcTransport:
             },
         }
         data = json.dumps(frame, **COMPACT_JSON).encode("utf-8")
-        self._transport.sendto(data, (self._dst_host, self._dst_port))
+        try:
+            self._transport.sendto(data, (self._dst_host, self._dst_port))
+        except Exception as exc:
+            _LOGGER.warning("UDP sendto %s:%s failed: %s", self._dst_host, self._dst_port, exc)
 
     def send_notify_status_throttled(self) -> None:
         """Rate-limited push triggered by MQTT updates (max 1 per 2 sec)."""

@@ -64,6 +64,7 @@ class UdpBroadcastListener:
 
         method = msg.get("method", "")
         msg_id = msg.get("id")
+        src = msg.get("src", "")
         params = msg.get("params", {})
 
         # Validate params.id is int (some devices are strict about this)
@@ -78,7 +79,7 @@ class UdpBroadcastListener:
         response = {
             "id": msg_id,
             "src": self._coord.device_id,
-            "dst": "unknown",
+            "dst": src or "unknown",
             "result": result,
         }
         resp_data = json.dumps(response, **COMPACT_JSON).encode("utf-8")

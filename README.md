@@ -170,6 +170,24 @@ Die Integration implementiert das vollständige **Shelly Gen2 RPC-Protokoll**:
 - **Compact JSON:** UDP-Antworten ohne Leerzeichen (wie echte Shelly-Firmware)
 - **Simulated Restart:** Cloud/Hyper-Reboot setzt Uptime-Counter zurück
 
+### State-Persistenz
+
+Die Bridge speichert den `rpc_udp_dst`-Wert (das UDP-Ziel für Push-Nachrichten) in
+einer State-Datei unter `.storage/shelly_3em_bridge/bridge_state.json`. So bleibt die
+WiFi-Konfiguration auch über HA-Neustarts erhalten und der Hyper 2000 muss nicht
+erneut über die Cloud konfiguriert werden.
+
+### WiFi-Stabilität
+
+Damit der Zendure Hyper 2000 dauerhaft im lokalen WiFi-Modus bleibt und nicht
+auf Cloud zurückfällt, implementiert die Bridge folgende Maßnahmen:
+
+- **Push-Intervall 5s:** `NotifyStatus` wird alle 5 Sekunden per UDP gepusht
+- **Crash-sichere Push-Loop:** Ausnahmen in der Push-Schleife werden gefangen und geloggt, statt den gesamten Push-Mechanismus zu stoppen
+- **Korrektes `dst`-Feld:** Broadcast-Antworten setzen `dst` auf die `src` des anfragenden Geräts (nicht `"unknown"`)
+- **Peer-ID Tracking:** `NotifyStatus` Push nutzt die gelernte `peer_id` des Hyper als `dst`
+- **State-Persistenz:** `rpc_udp_dst` wird bei `Sys.SetConfig` gespeichert und beim Start wiederhergestellt
+
 ## Fehlerbehebung
 
 | Problem | Ursache | Lösung |
@@ -180,6 +198,7 @@ Die Integration implementiert das vollständige **Shelly Gen2 RPC-Protokoll**:
 | Doppelte Geräte | MAC geändert | Geräte löschen, MAC konstant halten |
 | `address in use` | Port 80 belegt | Nginx-Add-on prüfen, HA neustarten |
 | Sensoren "nicht verfügbar" | MQTT-Broker nicht erreichbar | Broker-IP/Topic prüfen |
+| Hyper wechselt auf Cloud | Push-Loop abgestürzt oder State verloren | HA neustarten, Logs auf Fehler prüfen, ggf. Shelly neu konfigurieren |
 
 ## MQTT-Format
 
@@ -211,7 +230,8 @@ Zurück zur HA-Integration:
 
 | Version | Änderungen |
 |---|---|
-| **3.0.0** | UDP Broadcast Listener, UDP RPC Transport, Cloud-Client mit Sys.SetConfig/Reboot, lokale WiFi-Kommunikation mit Zendure Hyper |
+| **3.1.0** | WiFi-Stabilität: State-Persistenz, crash-sichere Push-Loop, korrektes dst-Feld, Push-Intervall 5s |
+| **3.0.0** | UDP Broadcast Listener, UDP RPC Transport, Cloud-Client mit Sys.SetConfig/Reboot, lokale WiFi-Kommunikation mit Zendure Hyper 2000 |
 | **2.1.0** | Port-Verfügbarkeitsprüfung, Options Flow |
 | **2.0.0** | Komplett-Rewrite: Shutdown-Fix, mDNS, MAC-Konsistenz |
 | 1.x | Initiale Versionen |

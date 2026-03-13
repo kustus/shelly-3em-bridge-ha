@@ -14,6 +14,7 @@ Lessons from previous log analysis:
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import threading
 import time
@@ -192,10 +193,11 @@ class ShellyBridgeCoordinator(DataUpdateCoordinator):
         # Host IP – set during setup by __init__.py after mDNS resolves it
         self.host_ip: str | None = None
 
-        # UDP RPC config – set by Sys.SetConfig from cloud
+        # UDP RPC config – set by Sys.SetConfig from cloud, persisted to state file
         self.rpc_udp_dst: str | None = None
         self.rpc_udp_port: int | None = None
         self.udp_transport: Any = None  # UdpRpcTransport instance
+        self._state_file: str | None = None  # set in init_state_file()
 
         # Simulated restart tracking
         self._boot_time: float = time.monotonic()
@@ -206,6 +208,36 @@ class ShellyBridgeCoordinator(DataUpdateCoordinator):
 
         # Cloud key for ident responses
         self._cloud_key: str = self._config.get(CONF_CLOUD_KEY, "")
+
+    # ── State persistence ─────────────────────────────────────────────────────
+
+    def init_state_file(self, state_dir: str) -> None:
+        """Set up state file and load persisted rpc_udp_dst."""
+        import os
+        os.makedirs(state_dir, exist_ok=True)
+        self._state_file = os.path.join(state_dir, "bridge_state.json")
+        try:
+            with open(self._state_file) as f:
+                state = json.loads(f.read())
+            dst = state.get("rpc_udp_dst")
+            if dst:
+                self.rpc_udp_dst = dst
+                _LOGGER.info("Restored rpc_udp_dst from state: %s", dst)
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+
+    def save_state(self) -> None:
+        """Persist rpc_udp_dst so it survives an HA restart."""
+        if not self._state_file:
+            return
+        state = {}
+        if self.rpc_udp_dst:
+            state["rpc_udp_dst"] = self.rpc_udp_dst
+        try:
+            with open(self._state_file, "w") as f:
+                f.write(json.dumps(state))
+        except OSError as exc:
+            _LOGGER.warning("Cannot save state: %s", exc)
 
     # ── Public lifecycle ──────────────────────────────────────────────────────
 

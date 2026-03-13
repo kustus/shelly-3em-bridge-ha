@@ -149,6 +149,8 @@ class ShellyCloudClient:
                     self._coord.rpc_udp_dst = dst_addr
                     self._coord.rpc_udp_port = listen_port
                     self._coord._cfg_rev += 1
+                    self._coord.save_state()  # persist for HA restart survival
+                    _LOGGER.info("Sys.SetConfig: rpc_udp_dst=%s", dst_addr)
                     if self._coord.udp_transport:
                         self._coord.udp_transport.set_destination(dst_addr)
                 await self._send_response(ws, msg_id, {"restart_required": True})
