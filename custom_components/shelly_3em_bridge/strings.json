@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Shelly Pro 3EM Bridge",
+        "description": "Configure the MQTT source and the virtual Shelly device identity.",
+        "data": {
+          "mqtt_broker": "MQTT Broker IP",
+          "mqtt_port": "MQTT Broker Port",
+          "mqtt_topic": "MQTT Topic (Power in Watts)",
+          "mqtt_username": "MQTT Username (optional)",
+          "mqtt_password": "MQTT Password (optional)",
+          "device_mac": "Virtual Device MAC Address",
+          "http_port": "HTTP Server Port"
+        },
+        "data_description": {
+          "device_mac": "Must be unique on your LAN, e.g. 5C:CF:7F:AA:BB:01. Changing this after setup requires re-adding the bridge in the Shelly App.",
+          "mqtt_topic": "The MQTT topic that publishes the current power consumption as a plain numeric value in Watts.",
+          "http_port": "Port the virtual Shelly device HTTP/WebSocket server listens on. MUST be 80 for the Shelly App network scan. Only change if port 80 is occupied (Nginx SSL add-on); then use manual device-add in the Shelly App."
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Invalid MAC address format. Use AA:BB:CC:DD:EE:FF.",
+      "invalid_port": "Port must be between 80 and 65535.",
+      "port_in_use": "Port is already in use. Choose a different port."
+    },
+    "abort": {
+      "already_configured": "A bridge with this MAC address is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shelly Pro 3EM Bridge Options",
+        "data": {
+          "mqtt_broker": "MQTT Broker IP",
+          "mqtt_port": "MQTT Broker Port",
+          "mqtt_topic": "MQTT Topic (Power in Watts)",
+          "mqtt_username": "MQTT Username (optional)",
+          "mqtt_password": "MQTT Password (optional)",
+          "http_port": "HTTP Server Port",
+          "cloud_enabled": "Shelly Cloud Connection (for Zendure Hyper)",
+          "cloud_server": "Cloud Server",
+          "cloud_key": "Cloud JWT Key (from real Shelly)"
+        },
+        "data_description": {
+          "cloud_enabled": "Enable to push power data to the Shelly Cloud. Required for Zendure Hyper 2000 Smart CT mode. The real Shelly Pro 3EM must be disconnected!",
+          "cloud_key": "JWT token extracted from the real Shelly via GET /rpc/Shelly.GetDeviceInfo?ident=true",
+          "cloud_server": "Shelly Cloud WebSocket server address (usually auto-detected)"
+        }
+      }
+    },
+    "error": {
+      "invalid_port": "Port must be between 80 and 65535.",
+      "port_in_use": "Port is already in use.",
+      "cloud_key_required": "Cloud JWT Key is required when cloud is enabled."
+    }
+  }
+}

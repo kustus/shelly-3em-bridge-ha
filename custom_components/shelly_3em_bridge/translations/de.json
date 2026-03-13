@@ -1,0 +1,51 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Shelly Pro 3EM Bridge",
+        "description": "MQTT-Quelle und virtuelle Shelly-Geräteidentität konfigurieren.",
+        "data": {
+          "mqtt_broker": "MQTT-Broker-IP",
+          "mqtt_port": "MQTT-Broker-Port",
+          "mqtt_topic": "MQTT-Topic (Leistung in Watt)",
+          "mqtt_username": "MQTT-Benutzername (optional)",
+          "mqtt_password": "MQTT-Passwort (optional)",
+          "device_mac": "MAC-Adresse des virtuellen Geräts",
+          "http_port": "HTTP-Server-Port"
+        },
+        "data_description": {
+          "device_mac": "Muss im lokalen Netzwerk eindeutig sein, z.B. 5C:CF:7F:AA:BB:01. Eine Änderung nach der Einrichtung erfordert eine Neuanmeldung in der Shelly App.",
+          "mqtt_topic": "Das MQTT-Topic, das den aktuellen Stromverbrauch als einfachen numerischen Wert in Watt veröffentlicht.",
+          "http_port": "Port für den virtuellen Shelly HTTP/WebSocket-Server. MUSS 80 sein, damit der Shelly App Netzwerk-Scan funktioniert. Nur ändern wenn Port 80 belegt ist (Nginx SSL Add-on); dann manuell in der Shelly App hinzufügen."
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Ungültiges MAC-Adressformat. Verwende AA:BB:CC:DD:EE:FF.",
+      "invalid_port": "Port muss zwischen 1024 und 65535 liegen.",
+      "port_in_use": "Port wird bereits verwendet. Bitte anderen Port wählen."
+    },
+    "abort": {
+      "already_configured": "Eine Bridge mit dieser MAC-Adresse ist bereits konfiguriert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shelly Pro 3EM Bridge – Einstellungen",
+        "data": {
+          "mqtt_broker": "MQTT-Broker-IP",
+          "mqtt_port": "MQTT-Broker-Port",
+          "mqtt_topic": "MQTT-Topic (Leistung in Watt)",
+          "mqtt_username": "MQTT-Benutzername (optional)",
+          "mqtt_password": "MQTT-Passwort (optional)",
+          "http_port": "HTTP-Server-Port"
+        }
+      }
+    },
+    "error": {
+      "invalid_port": "Port muss zwischen 1024 und 65535 liegen.",
+      "port_in_use": "Port wird bereits verwendet."
+    }
+  }
+}

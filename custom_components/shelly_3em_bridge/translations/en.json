@@ -1,0 +1,51 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Shelly Pro 3EM Bridge",
+        "description": "Configure the MQTT source and the virtual Shelly device identity.",
+        "data": {
+          "mqtt_broker": "MQTT Broker IP",
+          "mqtt_port": "MQTT Broker Port",
+          "mqtt_topic": "MQTT Topic (Power in Watts)",
+          "mqtt_username": "MQTT Username (optional)",
+          "mqtt_password": "MQTT Password (optional)",
+          "device_mac": "Virtual Device MAC Address",
+          "http_port": "HTTP Server Port"
+        },
+        "data_description": {
+          "device_mac": "Must be unique on your LAN, e.g. 5C:CF:7F:AA:BB:01. Changing this after setup requires re-adding the bridge in the Shelly App.",
+          "mqtt_topic": "The MQTT topic that publishes the current power consumption as a plain numeric value in Watts.",
+          "http_port": "Port for the virtual Shelly HTTP/WebSocket server. Must be ≥1024 and not used by another process."
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Invalid MAC address format. Use AA:BB:CC:DD:EE:FF.",
+      "invalid_port": "Port must be between 1024 and 65535.",
+      "port_in_use": "Port is already in use. Choose a different port."
+    },
+    "abort": {
+      "already_configured": "A bridge with this MAC address is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shelly Pro 3EM Bridge Options",
+        "data": {
+          "mqtt_broker": "MQTT Broker IP",
+          "mqtt_port": "MQTT Broker Port",
+          "mqtt_topic": "MQTT Topic (Power in Watts)",
+          "mqtt_username": "MQTT Username (optional)",
+          "mqtt_password": "MQTT Password (optional)",
+          "http_port": "HTTP Server Port"
+        }
+      }
+    },
+    "error": {
+      "invalid_port": "Port must be between 1024 and 65535.",
+      "port_in_use": "Port is already in use."
+    }
+  }
+}

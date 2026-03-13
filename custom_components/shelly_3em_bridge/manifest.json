@@ -1,0 +1,13 @@
+{
+  "domain": "shelly_3em_bridge",
+  "name": "Shelly Pro 3EM Bridge",
+  "version": "3.0.0",
+  "documentation": "https://github.com/your-repo/shelly_3em_bridge",
+  "issue_tracker": "https://github.com/your-repo/shelly_3em_bridge/issues",
+  "requirements": [],
+  "dependencies": ["zeroconf"],
+  "codeowners": [],
+  "iot_class": "local_push",
+  "config_flow": true,
+  "quality_scale": "internal"
+}
